@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small full stack website of registration form</title>
+    <link rel="stylesheet" href="./style.css"> <!-- Link to the CSS file -->
+</head>
+
+<script src="./index.html" ></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+
+
+<script>
+    /*there is something wrong in below code --- 
+     async function signup(){
+        const username = document.getElementById("signup-username").value;
+        const password = document.getElementById("signup-password").value;
+        await axios.post("http://localhost:3000/signup",{
+            username :username,
+            password:password
+        });
+        alert("You are signed in!!");
+    }
+    */
+    async function signup() {
+    const username = document.getElementById("signup-username").value;
+    const password = document.getElementById("signup-password").value;
+
+    try {
+        const response = await axios.post("http://localhost:3000/signup", {
+            username: username,
+            password: password
+        });
+        alert("You are signed up!!"); // This alert should trigger on successful signup
+    } catch (error) {
+        alert("Signup failed: " + error.response.data.message); // Handle errors
+    }
+}
+
+
+async function signin() {
+    const username = document.getElementById("signin-username").value;
+    const password = document.getElementById("signin-password").value;
+
+    try {
+        const response = await axios.post("http://localhost:3000/signin", {
+            username: username,
+            password: password
+        });
+
+        localStorage.setItem("token",response.data.token);
+        alert("You are signed in!!"); // This alert should trigger on successful signup
+    } catch (error) {
+        alert("Signup failed: " + error.response.data.message); // Handle errors
+    }
+
+}
+
+async function getUserInformation() {
+    const response = await axios.get("http://localhost:3000/me",{
+        headers:{
+            token:localStorage.getItem("token")
+        }
+    })
+    document.getElementById("information").innerHTML="Username:" +response.data.username  +   "password:"+response.data.password
+}getUserInformation();
+
+function checkLoginStatus() {
+            const token = localStorage.getItem("token");
+            if (token) {
+                // User is logged in, hide signup and signin sections
+                document.getElementById("auth-section").style.display = "none";
+                document.getElementById("welcome-message").style.display = "block";
+            } else {
+                // User is not logged in, show signup and signin sections
+                document.getElementById("auth-section").style.display = "block";
+                document.getElementById("welcome-message").style.display = "none";
+            }
+        }
+
+
+function logout(){
+    localStorage.removeItem("token");
+    checkLoginStatus(); // Update the UI
+            alert("You have logged out!");
+}
+
+window.onload=checkLoginStatus;//check login status on page load
+</script>
+
+
+<body>
+    <div class="main ">
+        <h1><u>registration form</u></h1>
+        <div id="auth-section">
+          <!--there is something wrong in below code ----
+        <div class="second">
+            <h2><u>signup</u></h2>
+            <input id="signup-username"   type="text" name="username" placeholder="your username ">
+            <input id="signup-username" type="password" name="password" placeholder="your password ">
+
+            <button onclick="signup()">submit</button>
+        </div>
+    -->
+    <div class="second"> 
+        <h2><u>Signup</u></h2>
+        <input type="text" id="signup-username" placeholder="Your username">
+        <input type="password" id="signup-password" placeholder="Your password">
+        <button onclick="signup()">Submit</button>
+    </div>
+    
+        <div class="third">
+            <h2><u>signin</u></h2>
+            <input type="text" id="signin-username" name="username" placeholder="your username ">
+            <input type="password"  id="signin-password" name="password" placeholder="your password ">
+
+            <button onclick="signin()">submit</button>
+        </div>
+        </div>
+        
+        <div>
+            User information: 
+            <div id="information"></div>
+        </div>
+        <div id="welcome-message" style="display: none;">
+            <h2>Welcome back!</h2>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+</body>
+</html>
